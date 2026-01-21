@@ -10,9 +10,9 @@ from sklearn.metrics import confusion_matrix
 import seaborn as sns
 
 class WeldingFaultDetector:
-    """
-    XGBoost 알고리즘을 사용하여 용접 불량을 탐지하는 모델 클래스
-    """
+    
+    # XGBoost 알고리즘을 사용하여 용접 불량을 탐지하는 모델 클래스
+    
     def __init__(self):
         # XGBClassifier 객체 생성 (하이퍼파라미터 설정)
         self.model = xgb.XGBClassifier(
@@ -24,9 +24,9 @@ class WeldingFaultDetector:
         )
         
     def train(self, data_manager):
-        """
-        준비된 데이터를 받아 모델 학습
-        """
+        
+        # 준비된 데이터를 받아 모델 학습
+        
         print("\n-Model- 학습 시작")
         # fit: 실제 학습을 수행하는 함수
         self.model.fit(
@@ -39,9 +39,9 @@ class WeldingFaultDetector:
         print("-Model- 학습 완료")
 
     def evaluate(self, data_manager):
-        """
-        학습에 쓰지 않은 테스트 데이터로 최종 성능을 평가
-        """
+        
+        # 학습에 쓰지 않은 테스트 데이터로 최종 성능을 평가
+        
         # predict: 문제(X_test)만 보고 정답을 맞혀보게 함
         y_pred = self.model.predict(data_manager.X_test)
         
@@ -51,9 +51,9 @@ class WeldingFaultDetector:
 
     # 폐기
     def show_feature_importance(self):
-        """
-        어떤 변수(전압, 전류 등)가 불량 판정에 가장 큰 영향을 줬는지 그래프로 보여줌
-        """
+        
+        # 어떤 변수(전압, 전류 등)가 불량 판정에 가장 큰 영향을 줬는지 그래프로 보여줌
+        
         plt.figure(figsize=(10, 5))
         # importance_type='gain': 해당 변수가 데이터를 얼마나 잘 구분해냈는지(이득) 기준
         xgb.plot_importance(self.model, importance_type='gain', show_values=False)
@@ -62,7 +62,7 @@ class WeldingFaultDetector:
         plt.show()
 
     def plot_confusion_matrix(self, data_manager):
-        """테스트 데이터를 활용해 모델의 분류 성능을 히트맵으로 시각화"""
+        # 테스트 데이터를 활용해 모델의 분류 성능을 히트맵으로 시각화
         y_pred = self.model.predict(data_manager.X_test)
         cm = confusion_matrix(data_manager.y_test, y_pred)
         
@@ -77,7 +77,7 @@ class WeldingFaultDetector:
         plt.show()
 
     def plot_normal_ranges(self, data_manager):
-        """2단계: 학습된 변수별 정상 범위 시각화"""
+        # 학습된 변수별 정상 범위 시각화
         # 데이터 매니저에서 계산된 평균과 표준편차를 가져옴
         means = data_manager.normal_means
         stds = data_manager.normal_stds

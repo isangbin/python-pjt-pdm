@@ -1,6 +1,6 @@
 # 예측 및 조치(제안) 클래스
 
-# SHAP: AI가 왜 그런 판단을 했는지 설명해주는 라이브러리
+# SHAP: AI가 왜 그런 판단을 했는지 설명해주는 라이브러리 (안썼음)
 import shap
 import pandas as pd # 데이터 처리를 위해 필요
 import numpy as np
@@ -31,10 +31,10 @@ class WeldingAdvisor:
         self.fig, self.ax = plt.subplots(figsize=(10, 5)) # 그래프 창 미리 생성
 
     def monitor_stream(self, new_data_row):
-        """
-        [핵심 기능] 데이터가 실시간으로 한 줄씩 들어올 때마다 호출되는 함수
-        데이터를 저장소에 쌓고, 추세와 위험도를 분석합니다.
-        """
+        
+        # [핵심 기능] 데이터가 실시간으로 한 줄씩 들어올 때마다 호출되는 함수
+        # 데이터를 저장소에 쌓고, 추세와 위험도를 분석
+        
         # 1. 히스토리에 데이터 추가 (DataFrame -> dict 변환 후 저장)
         # 실제 현장에서는 센서값이 딕셔너리나 리스트로 옴
         current_values = new_data_row.iloc[0].to_dict()
@@ -48,7 +48,7 @@ class WeldingAdvisor:
         
         # (1) 현재 순간의 위험도 체크 (기존 로직)
         if prob_defect > 0.6:
-            print(f"현재 데이터 불량 위험 높음! (확률: {prob_defect*100:.1f}%)")
+            print(f"현재 데이터 불량 위험 높음 (확률: {prob_defect*100:.1f}%)")
             self._analyze_root_cause(new_data_row) # 원인 분석
         
         # (2) 추세(Trend) 분석 - 데이터가 어느 정도(5개 이상) 쌓여야 가능
@@ -56,18 +56,18 @@ class WeldingAdvisor:
             trend_warnings = self._check_trends()
             
             if trend_warnings:
-                print(f"[WARNING] 불량 전조 증상(추세) 감지됨!")
+                print(f"[WARNING] 불량 전조 증상(추세) 감지")
                 for msg in trend_warnings:
-                    print(f"   - {msg}")
+                    print(f"- {msg}")
             else:
-                print(f"[SAFE] 현재 상태 양호하며, 특이한 추세 없음.")
+                print(f"[SAFE] 현재 상태 양호하며, 특이한 추세 없음")
         else:
-             print(f"[INFO] 추세 분석을 위해 데이터를 수집 중입니다...")
+             print(f"[INFO] 추세 분석을 위해 데이터를 수집 중...")
 
     def _check_trends(self):
-        """
-        저장된 최근 데이터(history)를 바탕으로 각 변수의 기울기를 계산
-        """
+        
+        # 저장된 최근 데이터(history)를 바탕으로 각 변수의 기울기를 계산
+        
         warnings = []
         df_history = pd.DataFrame(list(self.history)) # 큐를 데이터프레임으로 변환
         
@@ -89,17 +89,17 @@ class WeldingAdvisor:
             
             # 1) 값이 상승세(+)이고, 현재 값이 평균보다 높은데 더 올라가려 함 (악화)
             if slope > threshold and current_val > mean_val:
-                warnings.append(f"'{col}'이(가) 급격히 상승 중 (기울기: +{slope:.2f}). 낮추는 조치 필요.")
+                warnings.append(f"'{col}'이(가) 급격히 상승 중 (기울기: +{slope:.2f}). 낮추는 조치 필요")
             
             # 2) 값이 하락세(-)이고, 현재 값이 평균보다 낮은데 더 내려가려 함 (악화)
             elif slope < -threshold and current_val < mean_val:
-                warnings.append(f"'{col}'이(가) 급격히 하락 중 (기울기: {slope:.2f}). 높이는 조치 필요.")
+                warnings.append(f"'{col}'이(가) 급격히 하락 중 (기울기: {slope:.2f}). 높이는 조치 필요")
                 
         return warnings
 
     def _analyze_root_cause(self, input_data):
-        """(기존과 동일) Z-Score 기반의 상세 원인 분석"""
-        print("   >> 상세 조치 가이드:")
+        # (기존과 동일) Z-Score 기반의 상세 원인 분석
+        print("상세 조치 가이드:")
         for name in input_data.columns:
             val = input_data[name].values[0]
             mean = self.normal_means[name]
@@ -108,11 +108,11 @@ class WeldingAdvisor:
             
             if abs(z) > 1.5:
                 direction = "낮춰야" if z > 0 else "높여야"
-                print(f"      * {name}: {val:.1f} (정상 {mean:.1f} 대비 {abs(val-mean):.1f} 차이) -> **{direction}** 함")
+                print(f"      * {name}: {val:.1f} (정상 {mean:.1f} 대비 {abs(val-mean):.1f} 차이) -> {direction} 함")
     
-    # WeldingAdvisor 클래스 내부에 추가
+    
     def plot_live_trend(self, feature_name):
-        """특정 변수의 최근 흐름과 미래 예측 점선을 시각화합니다."""
+        # 특정 변수의 최근 흐름과 미래 예측 점선을 시각화
         if len(self.history) < 5: return # 데이터가 충분치 않으면 생략
         
         df_hist = pd.DataFrame(list(self.history))

@@ -6,15 +6,11 @@ import numpy as np
 # 데이터를 학습용/검증용으로 나누기 위한 함수
 from sklearn.model_selection import train_test_split
 
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split
-
 class WeldingDataManager:
-    """
-    데이터를 로드하고 학습용/검증용으로 나누는 클래스입니다.
-    특히, '정상 상태'의 기준(평균, 표준편차)을 수립하는 역할을 합니다.
-    """
+    
+    # 데이터를 로드하고 학습용/검증용으로 나누는 클래스
+    # 정상의 기준(평균, 표준편차)을 수립
+    
     def __init__(self):
         self.df = None
         # 분석할 핵심 변수 5가지
@@ -30,14 +26,14 @@ class WeldingDataManager:
         self.normal_stds = None  # 표준편차 (허용 범위 계산용)
 
     def load_data(self, normal_path, abnormal_path):
-        """
-        CSV 파일을 읽어오고 정답(Label)을 붙여 하나로 합침
-        """
+        
+        # CSV 파일을 읽어오고 정답(Label)을 붙여 하나로 합침
+        
         try:
             df_normal = pd.read_csv(normal_path)
             df_abnormal = pd.read_csv(abnormal_path)
             
-            # 0: 정상, 1: 불량으로 라벨링
+            # 0: 정상, 1: 불량으로 라벨링 <- 불량 찾을거니까 직관적으로 편함
             df_normal[self.target] = 0
             df_abnormal[self.target] = 1
             
@@ -48,21 +44,20 @@ class WeldingDataManager:
             print("-Loader- 파일을 찾을 수 없습니다.")
             # self._generate_mock_data()
 
-    def _generate_mock_data(self):
-        """테스트를 위한 가상 데이터 생성 (파일 없을 시 사용)"""
-        np.random.seed(42)
-        # 정상 데이터: 평균 100, 표준편차 5
-        df_norm = pd.DataFrame(np.random.normal(100, 5, (1000, 5)), columns=self.features)
-        df_norm[self.target] = 0
-        # 불량 데이터: 평균 110, 표준편차 10 (더 많이 흔들림)
-        df_abnorm = pd.DataFrame(np.random.normal(110, 10, (200, 5)), columns=self.features)
-        df_abnorm[self.target] = 1
-        self.df = pd.concat([df_norm, df_abnorm], axis=0).reset_index(drop=True)
+    # def _generate_mock_data(self):
+    #     np.random.seed(42)
+    #     # 정상 데이터: 평균 100, 표준편차 5
+    #     df_norm = pd.DataFrame(np.random.normal(100, 5, (1000, 5)), columns=self.features)
+    #     df_norm[self.target] = 0
+    #     # 불량 데이터: 평균 110, 표준편차 10 (더 많이 흔들림)
+    #     df_abnorm = pd.DataFrame(np.random.normal(110, 10, (200, 5)), columns=self.features)
+    #     df_abnorm[self.target] = 1
+    #     self.df = pd.concat([df_norm, df_abnorm], axis=0).reset_index(drop=True)
 
     def split_data(self):
-        """
-        데이터를 6:2:2로 나누고, 학습용 데이터 중 '정상'인 것들의 통계 정보를 계산함
-        """
+        
+        # 데이터를 6:2:2로 나누고, 학습용 데이터 중 정상인 것들의 통계 정보를 계산함
+        
         X = self.df[self.features]
         y = self.df[self.target]
 
@@ -86,4 +81,4 @@ class WeldingDataManager:
         # 이 값이 있어야 현재 데이터가 평소보다 얼마나 심하게 벗어났는지 알 수 있음
         self.normal_stds = normal_data.std()
         
-        print(f"[Data] 분할 및 통계 산출 완료 -> Train: {len(self.X_train)}건")
+        print(f"-loader- 분할 및 통계 산출 완료 -> Train: {len(self.X_train)}건")
