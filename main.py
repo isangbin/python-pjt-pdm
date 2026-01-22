@@ -57,9 +57,9 @@ def main():
         
         # 인위적인 노이즈(진동) + 지속적인 상승 트렌드(step * 1.5) 추가
         noise = np.random.normal(0, 0.5) 
-        drift = step * 2.0 # 단계마다 전압이 2.0씩 오름 (꽤 빠른 속도)
+        drift = step * 2.0 # 단계마다 전압이 2.0씩 내려감 (꽤 빠른 속도)
         
-        current_data['DV_R'] = current_data['DV_R'] + drift + noise
+        current_data['DV_R'] = current_data['DV_R'] - drift - noise
         
         # 모니터링 시스템에 데이터 주입
         print(f"\n[Step {step}] 입력 DV_R: {current_data['DV_R'].values[0]:.2f}")
@@ -67,7 +67,7 @@ def main():
         advisor.monitor_stream(current_data)
 
         # 실시간 추세 및 미래 예측 그래프 시각화 (advisor.py의 plot_live_trend 호출)
-        # 5개 이상의 데이터가 쌓인 시점(Step 5)부터 그래프를 출력합니다.
+        # 5개 이상의 데이터가 쌓인 시점(Step 5)부터 그래프를 출력
         if step >= 5:
             advisor.plot_live_trend('DV_R') 
         
